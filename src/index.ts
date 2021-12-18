@@ -3,7 +3,7 @@
 
 interface User {
     userEmail: string
-    phone?: number
+    phone?: number //optional property
 
     login():string
     logout(): string
@@ -14,59 +14,83 @@ interface User {
 // implements is for implementing an interface
 
 //Classes that are derived from an interface must follow the structure provided by their interface.
+//super cannot be used in interface derived class
 
 abstract class Employee implements User{
     userEmail: string
     empCode: number
     empName: string
+    empSalary: number
+    empBonus: number
 
-    constructor(email:string, code:number, name: string){
+    constructor(email:string, code:number, name: string, salary: number, bonus: number){
         this.userEmail = email
         this.empCode = code
         this.empName = name
+        this.empSalary = salary
+        this.empBonus = bonus
+
     }
 
     login(): string {
-        return `${this.empName} has just logged in`
+        return `Employee ${this.empName} has just logged in`
         
     }
 
     logout(): string{
-        return `${this.empName} has logged out`
+        return `Employee ${this.empName} has logged out`
+    }
+
+    //class derived from interface can also have additional methods not defined in interface
+
+    //abstraction
+    private calcSalary(): number {
+        return this.empSalary + this.empBonus
+    }
+    //calcSalary is private to this Employee class and child class, cannot be accessed from other class.
+
+    public getSalary(): number {
+        return this.calcSalary()
+        
+    }
+
+    public showSalary(): string {
+        const salary: number = this.getSalary()
+        return `Employee ${this.empName}'s total salary is Rs. ${salary}.`
     }
 }
 
-//child class inherited from parent Employee
+//child class inherited from parent abstract class Employee
+// child class of an abstract class does not need to follow all structures provided by their parent abstract class
+
 class Manager extends Employee{
 
-    managerSalary: number
-    managerBonus: number
+    managerDept: string
 
-    constructor(email:string, code:number, name: string, salary:number, bonus:number){
-        super(email,code,name)
-        this.managerSalary = salary
-        this.managerBonus = bonus
+    constructor(email:string, code:number, name: string, dept:string, salary:number, bonus:number){
+        super(email,code,name,salary,bonus)
+        this.managerDept = dept
     }
 
-    
-    calcSalary(): string {
-        let sum:number = this.managerSalary + this.managerBonus
-        return `Manager ${this.empName}'s total salary is Rs. ${sum}`
+    //overriding showSalary() method from parent class
+    public showSalary(): string {
+        const managerSalary: number = super.getSalary()
+        return `Manager ${this.empName}'s total salary is ${managerSalary}`
     }
+    //showSalary() method has more than one form. So polymorphism.
 
-    getSalary(): string {
-        return this.calcSalary()
-    }
 }
 
-//inherit from Employee class
+
+//multiple inheritance from Employee class
+//Polymorphism - Employee has more than one form.
 
 class Developer extends Employee{
 
     developerPosition: string
 
-    constructor(email:string, code:number, name: string, position:string){
-        super(email,code,name)
+    constructor(email:string, code:number, name: string, salary: number, bonus: number, position:string){
+        super(email,code,name,salary,bonus)
         this.developerPosition = position
     }
 
@@ -80,8 +104,34 @@ class Developer extends Employee{
 
 }
 
-let managerOne: Manager = new Manager('manager@gmail.com', 1, 'Ankush', 10000, 3000)
-// let userOne: Employee = new Employee('fds@gmail.com', 2, 'fds') trying to create instance of abstract class
-let developerOne: Developer = new Developer('dev@gmail.com',3,'Sanit','junior')
+// multiple derivation from Interface User
+class Intern implements User{
+    userEmail: string
+    internPosition: string
 
+    constructor(email: string, position: string) {
+        this.userEmail = email
+        this.internPosition = position
+    }
+
+    login(): string{
+        return `intern ${this.userEmail} has logged in`
+    }
+
+    logout(): string{
+        return `intern ${this.userEmail} has logged out`
+    }
+
+    getInternPosition(): string {
+        return `Intern position is ${this.internPosition} `
+    }
+}
+
+// trying to create instance of abstract class
+// let userOne: Employee = new Employee('fds@gmail.com', 2, 'fds', 1000, 200)
+//throws error: cannot create instance of an abstract class
+
+let managerOne: Manager = new Manager('ank.knr@gmail.com', 1, 'Ankush', 'Design Team', 10000, 3000 )
+let developerOne: Developer = new Developer('snit@gmail.com', 2, 'Sanit', 5000, 1500, 'junior')
+let internOne: Intern = new Intern('fre@intern.com','software engineer intern')
 
