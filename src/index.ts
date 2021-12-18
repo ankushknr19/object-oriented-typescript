@@ -1,10 +1,13 @@
 //explicitly defining class shape using interface
 // interface defines the syntax for classes to follow
 
+//interface provides complete abstraction i.e. it only provides method prototypes and not their implementation.
+
 interface User {
     userEmail: string
     phone?: number //optional property
 
+    //abstract methods i.e. methods with no implementation
     login():string
     logout(): string
 }
@@ -15,6 +18,8 @@ interface User {
 
 //Classes that are derived from an interface must follow the structure provided by their interface.
 //super cannot be used in interface derived class
+
+//abstract class can have abstract and non-abstract methods
 
 abstract class Employee implements User{
     userEmail: string
@@ -47,12 +52,13 @@ abstract class Employee implements User{
     private calcSalary(): number {
         return this.empSalary + this.empBonus
     }
-    //calcSalary is private to this Employee class and child class, cannot be accessed from other class.
+    //calcSalary is private to this Employee class,scoped to this class only, cannot be accessed from outside.
 
-    public getSalary(): number {
+    protected getSalary(): number {
         return this.calcSalary()
         
     }
+    // getSalary() is protected, scoped to this class and its child classes, cannot be accessed from other place.
 
     public showSalary(): string {
         const salary: number = this.getSalary()
@@ -74,7 +80,11 @@ class Manager extends Employee{
 
     //overriding showSalary() method from parent class
     public showSalary(): string {
-        const managerSalary: number = super.getSalary()
+
+        // trying to access private member of class Employee, throws error
+        // const salaryCalc: number = super.calcSalary() 
+
+        const managerSalary: number = super.getSalary()  //accessing public method of class Employee
         return `Manager ${this.empName}'s total salary is ${managerSalary}`
     }
     //showSalary() method has more than one form. So polymorphism.
@@ -82,12 +92,12 @@ class Manager extends Employee{
 }
 
 
-//multiple inheritance from Employee class
-//Polymorphism - Employee has more than one form.
+//another inheritance from Employee class
+//Polymorphism - Employee has more than one form i.e. is Employee is a Manager and Employee is a Developer.
 
 class Developer extends Employee{
 
-    developerPosition: string
+    private developerPosition: string  //private member of the class, scoped to this class only, cannot be accessed outside
 
     constructor(email:string, code:number, name: string, salary: number, bonus: number, position:string){
         super(email,code,name,salary,bonus)
@@ -104,34 +114,15 @@ class Developer extends Employee{
 
 }
 
-// multiple derivation from Interface User
-class Intern implements User{
-    userEmail: string
-    internPosition: string
-
-    constructor(email: string, position: string) {
-        this.userEmail = email
-        this.internPosition = position
-    }
-
-    login(): string{
-        return `intern ${this.userEmail} has logged in`
-    }
-
-    logout(): string{
-        return `intern ${this.userEmail} has logged out`
-    }
-
-    getInternPosition(): string {
-        return `Intern position is ${this.internPosition} `
-    }
-}
 
 // trying to create instance of abstract class
 // let userOne: Employee = new Employee('fds@gmail.com', 2, 'fds', 1000, 200)
 //throws error: cannot create instance of an abstract class
 
+//creating instances of the inherited classes i.e. objects
 let managerOne: Manager = new Manager('ank.knr@gmail.com', 1, 'Ankush', 'Design Team', 10000, 3000 )
 let developerOne: Developer = new Developer('snit@gmail.com', 2, 'Sanit', 5000, 1500, 'junior')
-let internOne: Intern = new Intern('fre@intern.com','software engineer intern')
+
+// trying to access private member of Developer class, throws error
+// console.log(developerOne.developerPosition)
 
